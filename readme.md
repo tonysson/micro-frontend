@@ -13,3 +13,5 @@
 # To share packages accross micro frontend we use "shared" key in webpack file.There is two ways to share packages accrose micro frontend. we can do shared = ["react" , "react-dom" , "otherPackages"] to share a specific version or if we dont don't care we can import the package.json file, and do "shared : packageJson.dependencies"
 
 # [name].[contenthash].js insure that whenever we build some file for production all the differents that are built will use [name].[contenthash].js as a template to figure out how to name them. it will use [name] as the name of the file and [contenthash] as a hash. It will help us in caching.
+
+
