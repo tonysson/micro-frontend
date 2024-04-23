@@ -15,3 +15,60 @@
 # [name].[contenthash].js insure that whenever we build some file for production all the differents that are built will use [name].[contenthash].js as a template to figure out how to name them. it will use [name] as the name of the file and [contenthash] as a hash. It will help us in caching.
 
 
+# DEPLOYMENT WORKFLOW
+ - Each team develops feature on git branches names like 'container-dev'
+ - Features completes and ready to deploy for deployment ? Push branch to github 
+ - Create a pull request to merge into master/main
+ - Other engineers review the pull request
+ - When ready to deploy, merge the PR
+ - Workflow detect a change to the master/main branch, deployment runs
+
+ * git checkout -b container-dev
+ * make some changes to the container
+ * git add .
+ * git commit -m "some message"
+ * git push origin container-dev
+ * Create a pull request to merge into master
+ * and after merge pull request deployment will be triggered
+
+
+ # Handling CSS in Micro Frontend Applications
+    ## ISSUES
+    We have Pricing page and Sign In page. Those two pages are part of 2 different projects (micro-frontend)
+    So when both projects are developed by different teams the might decides to use different approch how handling and writing CSS. Both project might look different.
+
+    One possible way is that Pricing page can decided to have an h1 with black color and Sign In page can decide to have an h1 with green color
+
+    So when the user start navigating into different pages we load some CSS. Image loading h1 in Sign In page with green color. Since we are in SPA (single Page Application) we are not loading the entire page. we are just loading content on the screen. So as soon as user renavigate to Pricing page we will have the h1 with green color because we have the same rule in the browser for this h1.
+
+    The css from one project is going to impact the css for another project. So this is where the issue comes from
+
+    ## Solutions : CSS Scooping Techniques
+
+     1- Custom CSS you are writing for your project
+        * Use a CSS-in-JS library
+        * Use Vue's bult-in component style scoping
+        * Use Angular's built-in component style scoping
+        * "Namespace" all your CSS
+            ex : <div class="auth">
+                <h1>
+                    Sign In
+                <h1>
+            </div>
+            css : .auth h1 {color: 'green'}
+            So in any project the most root element must have general class name so that we scoop it with that name : .auth h1 {color: 'green'}
+     2 - CSS Coming from a component library or CSS library (bootstrap, material UI)
+        * Use a component library that does css-in-js
+        * Manually build your css library and apply namespacing techniques to it
+
+     # Class Name Collision
+        Two different projects using the same  css-in-js library. Any time this happens you might get class name collision in PRODUCTION.
+
+    # SOLUTION for Class Name Collision in PRODUCTION
+        when push code in production rather than give ou css-in-js library to randomly generated classes for us we will have different class name with differences when it is generated.
+        In our case we are using material UI
+        so we do in app.js:
+        // When starting building the application for production rather than generate classes like jss1 or jss2, generate classes with 'ma'
+        const generateClassName = createGenerateClassName({
+        productionPrefix: 'ma'
+        }) and we provide it to our <StylesProvider generateClassName={generateClassName}></StylesProvider>
