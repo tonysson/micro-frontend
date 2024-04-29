@@ -3,10 +3,13 @@ import  { mount } from 'auth/AuthApp';
 import { useHistory }  from 'react-router-dom';
 
 export default ({onSignIn}) => {
+
     const ref = useRef()
+
     // A copy of browser history
-    const history = useHistory()
     // pathname renamed to nextPathname is the path our marketing app is trying to navigate to. it comes from the location object
+    const history = useHistory()
+    
     // When my app load
     useEffect(() => {
         const { onParentNavigate } = mount(ref.current, {
