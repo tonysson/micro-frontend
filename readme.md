@@ -72,3 +72,90 @@
         const generateClassName = createGenerateClassName({
         productionPrefix: 'ma'
         }) and we provide it to our <StylesProvider generateClassName={generateClassName}></StylesProvider>
+
+
+# ROUTING in micro frontend
+
+    ## Inflexible Requirement #1
+        Both the container + Individual SubApps need routing features
+
+        Users can navigate around to different sub-apps using routing logic build into the container
+
+        Users can navigate around in a subapp using routing logic build into the sub-app itself
+
+        Not all sub-apps will require routing features
+
+    ## Inflexible Requirement #2
+        SUB APPS might need to add in new pages/routes all the time
+
+        New routes added to sub-apps should not require a redeployment of the container.
+
+    ## Inflexible Requirement #3
+        We might need to show two or more microFrontends at the same time
+
+        This will occur all the time if we have some kind of sidebar nav that is built as a separate micro-frontend (when having persistent data on the screen).
+    
+    ## Inflexible Requirement #4
+        We want to use off-the-shelf routing solutions
+
+        Building a routing library can hard - we dont't want to author a new one
+
+        Some amount of custom coding is OK
+        
+    ## Inflexible Requirement #5
+        We nned navigation feature for sub apps in both hosted mode and an in isolation
+
+        Developing for each environment should be easy - a developer should immediately be able to see what path the are visiting.
+
+    Inflexible Requirement #6
+        If different apps need to communicate information about routing, it should be done in as generic a fashion as possible
+
+        Each app might be using a completely different navigation framework
+
+        We might be swap out or upgrade navigation libraries all the time - should not require a  rewrite of the rest of the app.
+
+# A Few Solution ROUTING in micro frontend for our application
+
+    # 1 Both the container + the individual SubApps need routing features
+
+        ### Container:::REACT-ROUTER =======> Marketing:::: REACT-ROUTER 
+          The container and each sub app can optionally have a routing library 
+
+
+    # 2 Sub apps might need to add in new pages/routes all the times
+      
+        Containers routing will be used to decide which microfrontend to show
+        ### CONTAINER
+            / =====> MARKETING
+            /pricing =====> MARKETING
+            /auth =====> AUTH
+            / dashboard =====> DASHBOARD
+
+        Marketing router used to decide wich page to show
+        ### MARKETING
+            / =====> Landing
+            /pricing =====> Pricing
+
+    # 3 We might need to show two or more microfrontends at the same time
+
+        Container's routing will be used to decide which microfrontend to show
+        ### CONTAINER
+        / =====> MARKETING + PRICING
+
+
+# Routing libraries decide what content to show on the screen.
+    ## HISTORY ===> Object to get and set the current path the user is visiting
+        ### Browser History => Look at the path portion of the url (everything after the domain) to figure out what the current path is
+        ### Memory or Abstract History => Keep track of the current path in memory
+    ## ROUTER ====> Shows different content based on the current path.
+
+# IN OUR APPLICATION WE 'll be using this :
+    ## CONTAINER ====> React-Router using BROWSER HISTORY
+    ## MARKETING ====> React-Router using MEMORY HISTORY
+    ## AUTH ====> React-Router using MEMBER HISTORY
+
+# Communication about routing between Container and SubApp! It should be done in as generic way as possible
+
+    ## User cliks link governed by CONTAINER(BrowserHistory) ===> Communicate change DOWN to Marketing ==> Marketing's Memory History should update it's current path
+
+    ## User cliks link governed by MARKETING(MemoryHistory) ===> Communicate change UP to Container ==> Container's BrowserHistory should update it's current path
